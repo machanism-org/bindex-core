@@ -28,8 +28,8 @@ import org.machanism.machai.bindex.core.BindexRepository;
 import org.machanism.machai.bindex.core.MongoBindexRepository;
 import org.machanism.machai.bindex.core.Picker;
 import org.machanism.machai.schema.Bindex;
-import org.mockito.MockedConstruction;
 import org.mockito.ArgumentCaptor;
+import org.mockito.MockedConstruction;
 
 import com.sun.net.httpserver.HttpServer;
 
