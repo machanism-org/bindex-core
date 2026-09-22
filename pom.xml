@@ -194,14 +194,21 @@
 		</license>
 	</licenses>
 
+	<issueManagement>
+		<url>https://github.com/machanism-org/bindex-core/issues</url>
+	</issueManagement>
+
 	<scm>
-		<connection>scm:git:https://github.com/machanism-org/machai.git</connection>
-		<developerConnection>scm:git:https://github.com/machanism-org/machai.git</developerConnection>
-		<url>https://github.com/machanism-org/machai.git</url>
+		<connection>scm:git:https://github.com/machanism-org/bindex-core.git</connection>
+		<developerConnection>scm:git:https://github.com/machanism-org/bindex-core.git</developerConnection>
+		<url>https://github.com/machanism-org/bindex-core.git</url>
 	</scm>
 
-	<issueManagement>
-		<url>https://github.com/machanism-org/machai/issues</url>
-	</issueManagement>
+	<distributionManagement>
+		<site>
+			<id>machai.machanism.org</id>
+			<url>scp://machanism.org/@machai</url>
+		</site>
+	</distributionManagement>
 
 </project>
