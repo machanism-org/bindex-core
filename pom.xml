@@ -204,11 +204,4 @@
 		<url>https://github.com/machanism-org/bindex-core.git</url>
 	</scm>
 
-	<distributionManagement>
-		<site>
-			<id>machai.machanism.org</id>
-			<url>scp://machanism.org/@machai</url>
-		</site>
-	</distributionManagement>
-
 </project>
