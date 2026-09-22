@@ -120,16 +120,16 @@ Selects libraries relevant to a user's query through Bindex recommendations. Use
 
 | Parameter | Description | Default value |
 |---|---|---|
-| `gw.model` | GenAI model used by the picker when `pick.model` is not set. | Host/application-defined. |
-| `gw.mini.model` | Compact GenAI model used by Bindex generation and registration acts. | Host/application-defined. |
+| `gw.model` | GenAI model used by the picker when `pick.model` is not set. | Host/application-defined; built-in acts commonly use `CodeMie:gpt-5.4-2026-03-05` or the configured mini model. |
+| `gw.mini.model` | Compact GenAI model used by the Bindex generation and registration acts. | `CodeMie:gpt-5.6-luna-2026-07-09` in the built-in Bindex acts. |
 | `pick.model` | Model override used for classifying library-selection requests. | Falls back to `gw.model`. |
-| `embedding.model` | Embedding provider model used to encode classifications for semantic search. | Host/application-defined. |
-| `pick.score` | Similarity threshold used when selecting recommendations. | Act-defined; commonly `0.86`. |
-| `picker.classificationInstruction` | Custom instruction template for producing classification JSON. | Built-in classification instruction. |
-| `gw.path` | File glob used by an act to select project files. | `glob:.` for Bindex generation acts. |
-| `BINDEX_REPO_URL` | MongoDB connection URI for the Bindex repository. | Application-defined. |
-| `BINDEX_USER` | MongoDB username when authentication is required. | Not set. |
-| `BINDEX_PASSWORD` | MongoDB password used to authenticate to the repository. | Not set. |
+| `embedding.model` | Embedding provider model used to encode classifications for semantic search. | Host/application-defined; built-in acts commonly use `CodeMie:text-embedding-005`. |
+| `pick.score` | Similarity threshold used by the library-picking act when selecting recommendations. | `0.86` in the built-in `pick` and `assembly` acts. |
+| `picker.classificationInstruction` | Custom instruction template for producing classification JSON; it receives the classification schema and user query as format arguments. | Built-in classification instruction. |
+| `gw.path` | File glob used by an act to select the project files it processes. | `glob:.` for the Bindex generation acts. |
+| `BINDEX_REPO_URL` | MongoDB connection URI for the Bindex repository. | `mongodb+srv://cluster0.hivfnpr.mongodb.net/?appName=Cluster0`. |
+| `BINDEX_USER` | MongoDB username when authentication is required. | Not set; when the default URI is used and both credentials are unset, the repository uses `user`. |
+| `BINDEX_PASSWORD` | MongoDB password used to authenticate to the repository. | Not set; when the default URI is used and both credentials are unset, the repository uses `user`. |
 | `vectorSearchLimits` / `search_limits` | Maximum number of vector-search candidates or recommendations. | `25` for the AI tool. |
 | `score` | Minimum semantic similarity score for returned recommendations. | `0.85` for the AI tool. |
 
