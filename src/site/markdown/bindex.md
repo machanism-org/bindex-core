@@ -175,7 +175,7 @@ The generated file should include:
 
 For libraries that provide ready-to-use components (such as a CLI application or a Maven plugin), the generated examples include step-by-step instructions that show how to install the component, how to configure it, and how to run or invoke it in a real scenario.
 
-The output must be valid, conveniently formatted JSON, must escape all inner double quotes, and must conform to the official Bindex schema. After generation, the sub-act validates the file with the Bindex validation tool (`get-bindex` using `file://bindex.json`) and fixes any issues before continuing.
+The output must be valid, conveniently formatted JSON, must escape all inner double quotes, and must conform to the official Bindex schema. After generation, the sub-act validates the file with the Bindex validation tool (`get_bindex` using `file://bindex.json`) and fixes any issues before continuing.
 
 #### 3. Register bindex.json
 

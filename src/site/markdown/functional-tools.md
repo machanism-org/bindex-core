@@ -24,7 +24,7 @@ Add `bindex.jar` to the classpath to use these Bindex-related function tools wit
 
 ## Functions
 
-### `get-bindex`
+### `get_bindex`
 
 Retrieves a Bindex descriptor for a project or library. Supply a repository identifier when the descriptor is already registered, or provide an HTTP(S) URL or `file://` path when the descriptor should be read directly. An optional GraphQL-style selection query can reduce the returned payload to the requested top-level fields.
 
@@ -37,9 +37,9 @@ Retrieves a Bindex descriptor for a project or library. Supply a repository iden
 | Parameter | Required | Description |
 | --- | --- | --- |
 | `id` | Yes | A Bindex identifier such as `groupId:artifactId:version`, an HTTP(S) URL to a `bindex.json` file, or a `file://` path. |
-| `graphql-query` | No | A GraphQL-style selection query, such as `{ name classification { languages } }`, used to select fields in the response. |
+| `graphql_query` | No | A GraphQL-style selection query, such as `{ name classification { languages } }`, used to select fields in the response. |
 
-### `pick-libraries`
+### `pick_libraries`
 
 Recommends libraries from a natural-language description of project needs or requirements. Results are selected through vector search and returned with the configured relevance criteria.
 
@@ -51,11 +51,11 @@ Recommends libraries from a natural-language description of project needs or req
 | --- | --- | --- |
 | `prompt` | Yes | The project need, desired functionality, technology stack, or feature for which libraries should be recommended. |
 | `score` | No | The minimum relevance score; only results at or above this threshold are included. Default: `0.85`. |
-| `search-limits` | No | The maximum number of recommendations to retrieve from vector search. Default: `25`. |
+| `limits` | No | The maximum number of recommendations to retrieve from vector search. Default: `25`. |
 
-**Returns:** a collection of recommended Bindex records. Increase `score` for more precise results or increase `search-limits` when broader discovery is useful.
+**Returns:** a collection of recommended Bindex records. Increase `score` for more precise results or increase `limits` when broader discovery is useful.
 
-### `register-bindex`
+### `register_bindex`
 
 Reads a Bindex JSON descriptor from a project file or an HTTP(S) URL, normalizes its schema reference, and registers it in the Bindex repository. The function returns the identifier of the saved record.
 
@@ -65,11 +65,11 @@ Reads a Bindex JSON descriptor from a project file or an HTTP(S) URL, normalizes
 
 | Parameter | Required | Description |
 | --- | --- | --- |
-| `bindex-file-path` | No | A relative path within the project directory or an HTTP(S) URL. Defaults to `bindex.json`. |
+| `file` | No | A relative path within the project directory or an HTTP(S) URL. Defaults to `bindex.json`. |
 
 **Returns:** the identifier assigned to the registered record. Local paths must resolve within the active project directory.
 
-### `register-bindex-json`
+### `register_bindex_json`
 
 Registers a Bindex descriptor supplied directly as a structured JSON object. Before saving, the function applies the Bindex schema reference and returns the saved record identifier.
 
@@ -79,7 +79,7 @@ Registers a Bindex descriptor supplied directly as a structured JSON object. Bef
 
 | Parameter | Required | Description |
 | --- | --- | --- |
-| `bindex-json` | Yes | The structured Bindex JSON object to register. |
+| `bindex_json` | Yes | The structured Bindex JSON object to register. |
 
 **Returns:** the identifier assigned to the saved record.
 
@@ -103,8 +103,8 @@ Loads the Markdown template containing the instructions and contextual prompts n
 
 ## Response and Usage Notes
 
-- `get-bindex` returns a Bindex object; when `graphql-query` is supplied, the returned object contains the selected top-level fields that are present in the descriptor. Nested objects are not recursively filtered.
-- `pick-libraries` returns a collection of recommended Bindex records.
+- `get_bindex` returns a Bindex object; when `graphql_query` is supplied, the returned object contains the selected top-level fields that are present in the descriptor. Nested objects are not recursively filtered.
+- `pick_libraries` returns a collection of recommended Bindex records.
 - Both registration functions return the identifier assigned to the saved record.
 - Registration normalizes the descriptor’s schema reference before saving it.
 - Remote inputs must be accessible through HTTP(S); local file inputs are resolved relative to the active project directory where applicable.

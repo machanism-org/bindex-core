@@ -82,7 +82,7 @@ For direct Maven use, declare the library in the consuming project:
 </dependency>
 ```
 
-The AI-facing operations are exposed as `get-bindex`, `pick-libraries`, `register-bindex`, and `register-bindex-json`. Configure the GenAI provider and embedding provider through the host application's `Configurator`; repository connections can be customized with the parameters listed below. Register Bindex descriptors, then use library selection to find reusable components for new requirements.
+The AI-facing operations are exposed as `get_bindex`, `pick_libraries`, `register_bindex`, and `register_bindex_json`. Configure the GenAI provider and embedding provider through the host application's `Configurator`; repository connections can be customized with the parameters listed below. Register Bindex descriptors, then use library selection to find reusable components for new requirements.
 
 ## Built-In Acts
 

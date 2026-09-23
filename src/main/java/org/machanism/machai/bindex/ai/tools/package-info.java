@@ -28,10 +28,10 @@
  * The package has two cooperating parts. {@link BindexFunctionTools} is the
  * {@link org.machanism.machai.ai.tools.FunctionTools} implementation: its
  * {@code @Tool}-annotated methods expose Functional AI Tools named
- * {@code get-bindex} (retrieves Bindex metadata for a project or library),
- * {@code pick-libraries} (recommends libraries from project requirements),
- * {@code register-bindex} (registers metadata from a project file or URL), and
- * {@code register-bindex-json} (registers a supplied metadata object). These
+ * {@code get_bindex} (retrieves Bindex metadata for a project or library),
+ * {@code pick_libraries} (recommends libraries from project requirements),
+ * {@code register_bindex} (registers metadata from a project file or URL), and
+ * {@code register_bindex_json} (registers a supplied metadata object). These
  * tools retrieve, recommend, and register descriptors through a configured
  * {@link org.machanism.machai.bindex.core.BindexRepository}. Its
  * {@code @Resource}-annotated method exposes the

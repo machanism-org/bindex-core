@@ -33,10 +33,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * <p>
  * This class exposes annotated {@link Tool}, {@link Prompt}, {@link Resource},
  * and {@link Param} capabilities for AI agents to interact with Bindex
- * repositories. Its functional AI tools are {@code get-bindex}, which retrieves
- * metadata; {@code pick-libraries}, which recommends libraries;
- * {@code register-bindex}, which registers a descriptor from a file or URL; and
- * {@code register-bindex-json}, which registers a supplied descriptor. It also
+ * repositories. Its functional AI tools are {@code get_bindex}, which retrieves
+ * metadata; {@code pick_libraries}, which recommends libraries;
+ * {@code register_bindex}, which registers a descriptor from a file or URL; and
+ * {@code register_bindex_json}, which registers a supplied descriptor. It also
  * provides the {@code generate-bindex} prompt template and the
  * {@code file:///schema/bindex-schema-v2.json} contextual JSON Schema resource.
  * Key capabilities include:
@@ -68,7 +68,7 @@ public class BindexFunctionTools implements FunctionTools {
 	 * URL to the official Bindex JSON schema definition. Used for validating Bindex
 	 * files and ensuring schema compliance.
 	 */
-	private static final String BINDEX_SCHEMA = "https://raw.githubusercontent.com/machanism-org/machai/refs/heads/main/bindex-core/src/main/resources/schema/bindex-schema-v2.json";
+	private static final String BINDEX_SCHEMA = "https://raw.githubusercontent.com/machanism-org/bindex-core/refs/heads/main/src/main/resources/schema/bindex-schema-v2.json";
 
 	/**
 	 * Default limit for the number of results returned by vector search operations.
@@ -111,7 +111,7 @@ public class BindexFunctionTools implements FunctionTools {
 	 * resolved through the configured repository.
 	 * </p>
 	 * <p>
-	 * If a GraphQL query is provided via the {@code graphql-query} parameter, the
+	 * If a GraphQL query is provided via the {@code graphql_query} parameter, the
 	 * resulting {@link Bindex} object's JSON representation will be filtered to
 	 * include only the requested fields before being returned.
 	 * </p>
@@ -134,11 +134,11 @@ public class BindexFunctionTools implements FunctionTools {
 	 *                                  serialized.
 	 * @throws IllegalArgumentException If no Bindex is found for an identifier.
 	 */
-	@Tool(name = "get-bindex", description = "Retrieves bindex metadata for a given project or library.")
+	@Tool(name = "get_bindex", description = "Retrieves bindex metadata for a given project or library.")
 	public Bindex getBindex(
 			@Param(name = "id", description = "The unique bindex ID (e.g., 'groupId:artifactId:version') or "
 					+ "a direct HTTP/HTTPS URL pointing to a remote bindex.json file location, or a 'file://' path for local JSON parsing/validation.") String id,
-			@Param(name = "graphql-query", description = "An optional GraphQL-style selection query "
+			@Param(name = "graphql_query", description = "An optional GraphQL-style selection query "
 					+ "(e.g., '{ name classification { languages } }') to filter the returned JSON structure. "
 					+ "Use this to retrieve only the specific fields you need and reduce token payload size.", defaultValue = Param.NULL) String query,
 			File projectDir,
@@ -211,13 +211,13 @@ public class BindexFunctionTools implements FunctionTools {
 	 *         libraries.
 	 * @throws IOException If there is an error during recommendation.
 	 */
-	@Tool(name = "pick-libraries", description = "Recommends libraries based on the user's prompt or project requirements.")
+	@Tool(name = "pick_libraries", description = "Recommends libraries based on the user's prompt or project requirements.")
 	public Collection<BindexInfo> getRecommendedLibraries(
 			@Param(name = "prompt", description = "The user prompt describing project needs or requirements.") String prompt,
 			@Param(name = "score", description = "The minimum relevance score threshold for recommended libraries. "
 					+ "Only libraries with a score equal to or higher than this value will be included. "
 					+ "If not specified, a default value is used.", defaultValue = DEFAULT_SCORE_VALUE) double score,
-			@Param(name = "search-limits", description = "The maximum number of relevant libraries to return. "
+			@Param(name = "limits", description = "The maximum number of relevant libraries to return. "
 					+ "If not specified, the default result limit is used.", defaultValue = VECTOR_SEARCH_LIMITS) int vectorSearchLimits,
 			Configurator configurator) throws IOException {
 
@@ -247,10 +247,10 @@ public class BindexFunctionTools implements FunctionTools {
 	 *                                  file-based registration, or an absolute path
 	 *                                  lies outside that directory.
 	 */
-	@Tool(name = "register-bindex", description = "Registers a Bindex JSON object either at the specified URL or from a file located in the project directory. "
+	@Tool(name = "register_bindex", description = "Registers a Bindex JSON object either at the specified URL or from a file located in the project directory. "
 			+ "Upon success, the Bindex ID is returned. Use this tool to add new or update existing Bindex metadata for your project, improving library search and integration.")
 	public String registerBindex(
-			@Param(name = "bindex-file-path", description = "The path of the Bindex file to register (must exist in the project directory) or URL.", defaultValue = BINDEX_JSON_FILE_NAME) String path,
+			@Param(name = "file", description = "The path of the Bindex file to register (must exist in the project directory) or URL.", defaultValue = BINDEX_JSON_FILE_NAME) String path,
 			File projectDir,
 			Configurator configurator) throws IOException {
 
@@ -317,9 +317,9 @@ public class BindexFunctionTools implements FunctionTools {
 	 * @return The unique Bindex ID assigned to the registered entry.
 	 * @throws NullPointerException If {@code bindex} is {@code null}.
 	 */
-	@Tool(name = "register-bindex-json", description = "Registers a Bindex JSON object and returns the bindexId on successful registration.")
+	@Tool(name = "register_bindex_json", description = "Registers a Bindex JSON object and returns the bindexId on successful registration.")
 	public String registerBindexJson(
-			@Param(name = "bindex-json", description = "The Bindex JSON object to register.") Bindex bindex,
+			@Param(name = "bindex_json", description = "The Bindex JSON object to register.") Bindex bindex,
 			Configurator configurator) {
 		Picker picker = new Picker(getBindexRepository(configurator), configurator);
 		bindex.set$schema(BINDEX_SCHEMA);

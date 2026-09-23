@@ -78,7 +78,7 @@
                          "description":  "Retrieves a registered Bindex descriptor by artifact identifier, or reads a descriptor directly from an HTTP(S) URL or a project-relative file URL. The optional GraphQL-style selection query reduces the response to requested top-level fields, such as name, version, or classification.",
                          "examples":  [
                                           {
-                                              "snippet":  "get-bindex id=\"file://bindex.json\" graphql-query=\"{ name version classification { languages } }\"",
+                                              "snippet":  "get-bindex id=\"file://bindex.json\" graphql_query=\"{ name version classification { languages } }\"",
                                               "description":  "Reads the local descriptor and returns only identity and language-classification information for a lightweight inspection."
                                           }
                                       ]
@@ -90,7 +90,7 @@
                          "description":  "Recommends indexed libraries for a natural-language development requirement. The tool uses vector search and returns candidates that meet the requested minimum relevance score; the default score is 0.85 and the default candidate limit is 25.",
                          "examples":  [
                                           {
-                                              "snippet":  "pick-libraries prompt=\"I need Java components for AI-assisted library metadata discovery and semantic search\" score=0.86 search-limits=10",
+                                              "snippet":  "pick-libraries prompt=\"I need Java components for AI-assisted library metadata discovery and semantic search\" score=0.86 limits=10",
                                               "description":  "Finds a focused set of high-relevance Java libraries before designing an application or selecting dependencies."
                                           }
                                       ]
@@ -102,19 +102,19 @@
                          "description":  "Loads a Bindex descriptor from a project-relative file path or HTTP(S) URL, normalizes its schema reference, and saves or updates the record in the configured Bindex repository. When omitted, the path defaults to bindex.json.",
                          "examples":  [
                                           {
-                                              "snippet":  "register-bindex bindex-file-path=\"bindex.json\"",
+                                              "snippet":  "register-bindex file=\"bindex.json\"",
                                               "description":  "Registers the descriptor generated in the project root so it can participate in semantic library discovery."
                                           }
                                       ]
                      },
                      {
                          "package":  "org.machanism.machai.bindex.ai.tools",
-                         "name":  "register-bindex-json",
-                         "signature":  "java.lang.String register-bindex-json(java.util.Map\u003cjava.lang.String, java.lang.Object\u003e bindexJson)",
+                         "name":  "register-bindex_json",
+                         "signature":  "java.lang.String register-bindex_json(java.util.Map\u003cjava.lang.String, java.lang.Object\u003e bindexJson)",
                          "description":  "Registers a structured Bindex JSON object already held by an agent or application, without requiring an intermediate file. The tool applies the Bindex schema reference before saving and returns the record identifier.",
                          "examples":  [
                                           {
-                                              "snippet":  "register-bindex-json bindex-json={\"id\":\"com.example:catalog-client:1.0.0\",\"name\":\"com.example:catalog-client\",\"version\":\"1.0.0\"}",
+                                              "snippet":  "register-bindex_json bindex_json={\"id\":\"com.example:catalog-client:1.0.0\",\"name\":\"com.example:catalog-client\",\"version\":\"1.0.0\"}",
                                               "description":  "Publishes metadata created in memory by an automated cataloging workflow; a production object must also include every required Bindex v2 field."
                                           }
                                       ]

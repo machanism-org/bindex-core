@@ -10,15 +10,15 @@ inputs = [
 '''
 ---
 enabledTools:
-    get-project-context-variables
-    write-file
-    apply-patch-to-file
-    get-bindex
+    get_project_context_variables
+    write_file
+    apply_patch_to_file
+    get_bindex
 ---
 # Validation
 
-- This task should only be performed for projects that are not parent projects. If the `MODULES` project context value is not empty, call `end-task` and do not continue.
-- Validate the generated `bindex.json` file using the `get-bindex` tool with a project relative path: `file://bindex.json`.
+- This task should only be performed for projects that are not parent projects. If the `MODULES` project context value is not empty, call `end_task` and do not continue.
+- Validate the generated `bindex.json` file using the `get_bindex` tool with a project relative path: `file://bindex.json`.
 - If there are any errors, fix the file.
 '''
 ]
