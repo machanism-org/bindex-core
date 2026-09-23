@@ -50,12 +50,12 @@ than recreate their functionality from scratch:
    database. For example: *"Create a REST API application for managing a user login using
    Spring Boot and Commercetools."*
 2. **Finds candidate libraries** — The act sends your initial request to
-   `pick-libraries`, using its configured relevance threshold of `0.86`. Semantic search
+   `pick_libraries`, using its configured relevance threshold of `0.86`. Semantic search
    ranks libraries by their intended use, so results can match the meaning of your request
    rather than only its exact keywords. Review the recommended components to ensure they
    fit your needs.
 3. **Reviews library metadata** — For every candidate that matches the request, the act
-   uses `get-bindex` to retrieve its Bindex JSON description. It also retrieves the
+   uses `get_bindex` to retrieve its Bindex JSON description. It also retrieves the
    [Bindex schema](https://raw.githubusercontent.com/machanism-org/machai/refs/heads/main/bindex-core/src/main/resources/schema/bindex-schema-v2.json)
    specified by the Assembly workflow and uses it to interpret that information
    consistently. The metadata can

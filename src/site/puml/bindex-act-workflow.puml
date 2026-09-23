@@ -11,7 +11,7 @@ start
 partition "bindex: Project Layout Discovery" {
   :Start Bindex act;
   if (MODULES context is not empty?) then (yes)
-    :Call end-task;
+    :Call end_task;
     stop
   else (no)
     if (Project layout is Maven?) then (yes)
@@ -94,7 +94,7 @@ partition "bindex/java/mvn-project Episode 2: Generation and Validation" {
   :Report bindex.json creation status;
 
   if (bindex.json exists?) then (yes)
-    :Validate bindex.json via get-bindex\n(file://bindex.json);
+    :Validate bindex.json via get_bindex\n(file://bindex.json);
     while (Validation errors?) is (yes)
       :Fix bindex.json;
       :Validate bindex.json again;
@@ -106,10 +106,10 @@ partition "bindex/java/mvn-project Episode 2: Generation and Validation" {
 
 partition "bindex/java/mvn-project Episode 3: Registration" {
   if (bindex.json exists?) then (yes)
-    :Call register-bindex on bindex.json;
+    :Call register_bindex on bindex.json;
     while (Registration errors?) is (yes)
       :Fix bindex.json;
-      :Call register-bindex on bindex.json again;
+      :Call register_bindex on bindex.json again;
     endwhile (no)
     :Display returned Bindex ID\nand status message;
   else (no)

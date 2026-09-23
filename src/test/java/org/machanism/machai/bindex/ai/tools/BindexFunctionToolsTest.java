@@ -258,7 +258,7 @@ class BindexFunctionToolsTest {
             ArgumentCaptor<Bindex> savedBindex = ArgumentCaptor.forClass(Bindex.class);
             verify(pickers.constructed().get(0)).save(savedBindex.capture());
             assertEquals(
-                    "https://raw.githubusercontent.com/machanism-org/machai/refs/heads/main/bindex-core/src/main/resources/schema/bindex-schema-v2.json",
+                    "https://raw.githubusercontent.com/machanism-org/bindex-core/refs/heads/main/src/main/resources/schema/bindex-schema-v2.json",
                     savedBindex.getValue().get$schema());
         }
     }

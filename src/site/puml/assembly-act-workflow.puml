@@ -25,14 +25,14 @@ partition "assembly Episode 1: Library Discovery" {
   note right
     https://raw.githubusercontent.com/machanism-org/machai/refs/heads/main/bindex-core/src/main/resources/schema/bindex-schema-v2.json
   end note
-  :Call pick-libraries with the user's\ninitial query as the prompt;
+  :Call pick_libraries with the user's\ninitial query as the prompt;
   note right
     pick.score = 0.86
   end note
   :Analyze each recommended library description;
   :Determine libraries matching\nthe user's request;
   while (More matching libraries?) is (yes)
-    :Retrieve the matching library's\nBindex file via get-bindex;
+    :Retrieve the matching library's\nBindex file via get_bindex;
   endwhile (no)
   :Use matching Bindex JSON metadata and\nusage examples to guide implementation;
   note right
