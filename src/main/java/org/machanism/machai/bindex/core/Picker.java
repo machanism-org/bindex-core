@@ -11,9 +11,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
 import org.machanism.macha.core.commons.configurator.Configurator;
-import org.machanism.machai.ai.manager.GenaiProviderManager;
-import org.machanism.machai.ai.provider.EmbeddingProvider;
-import org.machanism.machai.ai.provider.Genai;
+import org.machanism.machai.process.manager.ProcessProviderManager;
+import org.machanism.machai.process.provider.EmbeddingProvider;
+import org.machanism.machai.process.provider.ProcessProvider;
 import org.machanism.machai.schema.Bindex;
 import org.machanism.machai.schema.Classification;
 import org.machanism.machai.schema.Language;
@@ -153,7 +153,7 @@ public class Picker {
 		String classificationStr = getClassification(prompt, configurator);
 		if (classificationStr != null) {
 			String embeddingModel = configurator.get("embedding.model");
-			EmbeddingProvider embeddingProvider = GenaiProviderManager.getEmbeddingProvider(embeddingModel,
+			EmbeddingProvider embeddingProvider = ProcessProviderManager.getEmbeddingProvider(embeddingModel,
 					configurator);
 
 			List<Double> embedding = embeddingProvider.embedding(classificationStr, dimensions);
@@ -194,7 +194,7 @@ public class Picker {
 		String text = getClassificationText(classification);
 		String embeddingModel = configurator.get("embedding.model");
 
-		EmbeddingProvider embeddingProvider = GenaiProviderManager.getEmbeddingProvider(embeddingModel, configurator);
+		EmbeddingProvider embeddingProvider = ProcessProviderManager.getEmbeddingProvider(embeddingModel, configurator);
 		List<Double> descEmbedding = embeddingProvider.embedding(text, dimensions);
 		return descEmbedding;
 	}
@@ -236,7 +236,7 @@ public class Picker {
 		if (genai == null) {
 			throw new IllegalArgumentException("genai must not be null");
 		}
-		Genai provider = GenaiProviderManager.getProvider(genai, configurator);
+		ProcessProvider provider = ProcessProviderManager.getProvider(genai, configurator);
 
 		provider.prompt(classificationQuery);
 		String perform = provider.perform();

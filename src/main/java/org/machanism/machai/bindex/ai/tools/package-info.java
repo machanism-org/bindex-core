@@ -26,7 +26,7 @@
  * Provides the AI-facing integration layer for Bindex (bundle index) metadata.
  * <p>
  * The package has two cooperating parts. {@link BindexFunctionTools} is the
- * {@link org.machanism.machai.ai.tools.FunctionTools} implementation: its
+ * {@link org.machanism.machai.process.tools.FunctionTools} implementation: its
  * {@code @Tool}-annotated methods expose Functional AI Tools named
  * {@code get_bindex} (retrieves Bindex metadata for a project or library),
  * {@code pick_libraries} (recommends libraries from project requirements),
@@ -62,7 +62,7 @@
  *
  * @see BindexFunctionTools
  * @see GraphqlJsonFilter
- * @see org.machanism.machai.ai.tools.FunctionTools
+ * @see org.machanism.machai.process.tools.FunctionTools
  * @see org.machanism.machai.bindex.core.BindexRepository
  * @see org.machanism.machai.bindex.core.Picker
  */

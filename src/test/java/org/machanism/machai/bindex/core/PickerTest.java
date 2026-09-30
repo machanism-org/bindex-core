@@ -12,9 +12,9 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.machanism.macha.core.commons.configurator.Configurator;
-import org.machanism.machai.ai.manager.GenaiProviderManager;
-import org.machanism.machai.ai.provider.EmbeddingProvider;
-import org.machanism.machai.ai.provider.Genai;
+import org.machanism.machai.process.manager.ProcessProviderManager;
+import org.machanism.machai.process.provider.EmbeddingProvider;
+import org.machanism.machai.process.provider.ProcessProvider;
 import org.machanism.machai.schema.Bindex;
 import org.machanism.machai.schema.Classification;
 import org.machanism.machai.schema.Language;
@@ -41,7 +41,7 @@ class PickerTest {
         // Arrange
         BindexRepository repository = mock(BindexRepository.class);
         Configurator configurator = mock(Configurator.class);
-        Genai genai = mock(Genai.class);
+        ProcessProvider genai = mock(ProcessProvider.class);
         EmbeddingProvider embeddings = mock(EmbeddingProvider.class);
         BindexInfo withoutDescription = new BindexInfo();
         withoutDescription.setId("library-id");
@@ -60,9 +60,9 @@ class PickerTest {
         when(repository.getBindex("library-id")).thenReturn(fullBindex);
         Picker picker = new Picker(repository, configurator);
 
-        try (MockedStatic<GenaiProviderManager> providers = org.mockito.Mockito.mockStatic(GenaiProviderManager.class)) {
-            providers.when(() -> GenaiProviderManager.getProvider("chat-model", configurator)).thenReturn(genai);
-            providers.when(() -> GenaiProviderManager.getEmbeddingProvider("embedding-model", configurator))
+        try (MockedStatic<ProcessProviderManager> providers = org.mockito.Mockito.mockStatic(ProcessProviderManager.class)) {
+            providers.when(() -> ProcessProviderManager.getProvider("chat-model", configurator)).thenReturn(genai);
+            providers.when(() -> ProcessProviderManager.getEmbeddingProvider("embedding-model", configurator))
                     .thenReturn(embeddings);
 
             // Act
@@ -141,8 +141,8 @@ class PickerTest {
         when(repository.save(bindex, List.of(0.1, 0.2))).thenReturn("database-id");
         Picker picker = new Picker(repository, configurator);
 
-        try (MockedStatic<GenaiProviderManager> providers = org.mockito.Mockito.mockStatic(GenaiProviderManager.class)) {
-            providers.when(() -> GenaiProviderManager.getEmbeddingProvider("embedding-model", configurator))
+        try (MockedStatic<ProcessProviderManager> providers = org.mockito.Mockito.mockStatic(ProcessProviderManager.class)) {
+            providers.when(() -> ProcessProviderManager.getEmbeddingProvider("embedding-model", configurator))
                     .thenReturn(embeddingProvider);
 
             // Act
