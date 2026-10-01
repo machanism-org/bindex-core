@@ -16,6 +16,13 @@
     </P>
 
     <P>
+      The <CODE>bindex-core</CODE> project provides core functions for managing Bindex metadata,
+      including library generation, registration, selection, and project building. Its purpose is
+      to automate library-metadata processing for efficient application discovery, integration,
+      and assembly workflows.
+    </P>
+
+    <P>
       Bindex Core supports all types of project files, including source code, documentation,
       project site content, and other relevant files, when generating, registering, and processing
       project metadata.
@@ -50,24 +57,24 @@
     </P>
 
     <H2>Packages</H2>
-    <DL>
-      <DT><A href="org/machanism/machai/bindex/core/package-summary.html"><CODE>org.machanism.machai.bindex.core</CODE></A></DT>
-      <DD>
+    <dl>
+      <dt><A href="org/machanism/machai/bindex/core/package-summary.html"><CODE>org.machanism.machai.bindex.core</CODE></A></dt>
+      <dd>
         Provides Bindex persistence, semantic search, recommendation, registration, and dependency
         resolution. Use <CODE>BindexRepository</CODE> as the persistence boundary,
         <CODE>MongoBindexRepository</CODE> for MongoDB-backed storage and vector search, and
         <CODE>Picker</CODE> to classify requests and select matching libraries.
-      </DD>
+      </dd>
 
-      <DT><A href="org/machanism/machai/bindex/ai/tools/package-summary.html"><CODE>org.machanism.machai.bindex.ai.tools</CODE></A></DT>
-      <DD>
+      <dt><A href="org/machanism/machai/bindex/ai/tools/package-summary.html"><CODE>org.machanism.machai.bindex.ai.tools</CODE></A></dt>
+      <dd>
         Provides the AI-facing adapter layer. <CODE>BindexFunctionTools</CODE> makes descriptor
         retrieval, recommendation, and registration available as Functional AI Tools and exposes
         the Bindex JSON Schema Contextual Resource and generation Prompt Template;
         <CODE>GraphqlJsonFilter</CODE> projects selected top-level descriptor fields for GraphQL
         requests.
-      </DD>
-    </DL>
+      </dd>
+    </dl>
 
     <H2>Using Bindex Core</H2>
     <P>

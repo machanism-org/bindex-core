@@ -79,6 +79,14 @@ than recreate their functionality from scratch:
    initial code templates, and integration guidance. You can then adapt the files to your
    own standards and requirements.
 
+The library information used in this process comes from a `bindex.json` descriptor. For
+each library, the descriptor can be produced by analyzing project artifacts such as build
+files, source code, and other metadata. It records the library's capabilities, integration
+points, examples, authorship, and license. These descriptors are indexed with semantic
+embeddings so that a request can be matched by intent, not just by exact keywords. After
+selection, Assembly can provide a report of suggested components, integration details, and
+initial configuration for your review.
+
 If the request does not contain information needed to continue, Assembly asks for the
 missing details. In an interactive session, you can clarify requirements before
 continuing.
