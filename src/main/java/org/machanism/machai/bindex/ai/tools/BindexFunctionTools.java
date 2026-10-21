@@ -3,8 +3,10 @@ package org.machanism.machai.bindex.ai.tools;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -69,6 +71,11 @@ public class BindexFunctionTools implements FunctionTools {
 	 * files and ensuring schema compliance.
 	 */
 	private static final String BINDEX_SCHEMA = "https://raw.githubusercontent.com/machanism-org/bindex-core/refs/heads/main/src/main/resources/schema/bindex-schema-v2.json";
+
+	/**
+	 * Classpath location of the prompt template used to generate Bindex files.
+	 */
+	private static final String GENERATE_BINDEX_PROMPT_RESOURCE = "/prompts/generate_bindex.md";
 
 	/**
 	 * Default limit for the number of results returned by vector search operations.
@@ -345,11 +352,29 @@ public class BindexFunctionTools implements FunctionTools {
 	 * @throws NullPointerException if the configured schema resource is absent from
 	 *                              the classpath
 	 */
-	@Resource(uri = "file:///schema/bindex-schema-v2.json", description = "The JSON schema definition used for validating Bindex (bundle index) structure, rules, and property metadata.", mimeType = "application/json")
+	@Resource(uri = "file:///schema/bindex-schema-v2.json", description = "The JSON schema definition used for validating Bindex (bundle index) structure, "
+			+ "rules, and property metadata.", mimeType = "application/json")
 	public String getBindexSchema(URI uri) throws IOException {
-		URL resource = BindexFunctionTools.class.getResource(uri.getPath());
-		String propmpt = IOUtils.toString(resource, StandardCharsets.UTF_8);
-		return propmpt;
+		String path = uri.getPath();
+		if (path == null || path.isEmpty()) {
+			throw new IOException("Empty resource path in URI: " + uri);
+		}
+		if (!path.startsWith("/")) {
+			path = "/" + path;
+		}
+
+		URL resource = BindexFunctionTools.class.getResource(path);
+		if (resource == null) {
+			throw new IOException("Bindex schema resource not found: " + path);
+		}
+
+		URLConnection conn = resource.openConnection();
+		conn.setUseCaches(false);
+		try (InputStream in = conn.getInputStream()) {
+			return IOUtils.toString(in, StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			throw new IOException("Unable to read bindex schema from " + resource, e);
+		}
 	}
 
 	/**
@@ -362,15 +387,34 @@ public class BindexFunctionTools implements FunctionTools {
 	 * </p>
 	 *
 	 * @return the content of the Bindex generation prompt template
-	 * @throws IOException          if the prompt template resource cannot be read
-	 * @throws NullPointerException if the prompt template resource is absent from
-	 *                              the classpath
+	 * @throws IOException if the prompt template resource is absent from the
+	 *                     classpath or cannot be read
 	 */
 	@Prompt(name = "generate-bindex", description = "Loads the markdown template containing instructions and contextual prompts required to generate a Bindex file.")
 	public String bindexGenerationPrompts() throws IOException {
-		URL resource = BindexFunctionTools.class.getResource("/prompts/generate_bindex.md");
-		String propmpt = IOUtils.toString(resource, StandardCharsets.UTF_8);
-		return propmpt;
+	    return readResource(BindexFunctionTools.class, GENERATE_BINDEX_PROMPT_RESOURCE);
+	}
+
+	/**
+	 * Reads a classpath resource as UTF-8 text without using a cached connection.
+	 *
+	 * @param owner the class whose class loader is used to locate the resource
+	 * @param path  the absolute classpath resource path
+	 * @return the resource contents decoded as UTF-8
+	 * @throws IOException if the resource is missing or cannot be read
+	 */
+	private static String readResource(Class<?> owner, String path) throws IOException {
+	    URL resource = owner.getResource(path);
+	    if (resource == null) {
+	        throw new IOException("Resource not found: " + path);
+	    }
+	    URLConnection conn = resource.openConnection();
+	    conn.setUseCaches(false); 
+	    try (InputStream in = conn.getInputStream()) {
+	        return IOUtils.toString(in, StandardCharsets.UTF_8);
+	    } catch (IOException e) {
+	        throw new IOException("Unable to read resource " + resource, e);
+	    }
 	}
 
 }

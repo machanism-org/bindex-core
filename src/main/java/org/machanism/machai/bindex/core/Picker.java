@@ -1,9 +1,12 @@
 package org.machanism.machai.bindex.core;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.IllegalFormatException;
 import java.util.List;
 import java.util.Set;
 
@@ -51,6 +54,15 @@ public class Picker {
 	public static final String BINDEX_SCHEMA_RESOURCE = "/schema/bindex-schema-v2.json";
 	/** Configuration property overriding the classification prompt template. */
 	private static final String CLASSIFICATION_INSTRUCTION_PROP_NAME = "picker.classificationInstruction";
+
+	/** Shared JSON mapper used to read the schema and serialize schema nodes. */
+	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+	/**
+	 * Lazily initialized cache holding the extracted classification JSON schema
+	 * fragment to avoid repeated resource reads.
+	 */
+	private static volatile String classificationSchemaCache;
+
 	/**
 	 * Default prompt template used when no classification instruction is
 	 * configured.
@@ -212,35 +224,83 @@ public class Picker {
 	}
 
 	/**
-	 * Builds a classification prompt from the query and executes it through the
-	 * configured provider.
+	 * Reads a UTF-8 classpath resource without using the URL connection cache.
 	 *
-	 * @param query        the natural-language request to classify
-	 * @param configurator the configuration object
-	 * @return the raw provider response containing classification JSON
-	 * @throws IOException if the schema resource cannot be loaded or parsed
+	 * @param owner the class used to resolve the resource path
+	 * @param path the classpath resource path to read
+	 * @return the resource contents as a UTF-8 string
+	 * @throws IOException if the resource cannot be found or read
+	 */
+	private static String readResource(Class<?> owner, String path) throws IOException {
+		URL resource = owner.getResource(path);
+		if (resource == null) {
+			throw new IOException("Resource not found: " + path);
+		}
+		URLConnection conn = resource.openConnection();
+		conn.setUseCaches(false);
+		try (InputStream in = conn.getInputStream()) {
+			return IOUtils.toString(in, StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			throw new IOException("Unable to read resource " + resource, e);
+		}
+	}
+
+	/**
+	 * Loads and caches the classification portion of the Bindex JSON schema.
+	 *
+	 * @return the classification schema serialized as JSON
+	 * @throws IOException if the schema resource cannot be read or does not contain
+	 *                     the expected classification property
+	 */
+	private static String loadClassificationSchema() throws IOException {
+		String cached = classificationSchemaCache;
+		if (cached != null) {
+			return cached;
+		}
+		String schema = readResource(Bindex.class, BINDEX_SCHEMA_RESOURCE);
+		JsonNode node = OBJECT_MAPPER.readTree(schema).path("properties").path("classification");
+		if (node.isMissingNode()) {
+			throw new IOException("No 'properties.classification' in " + BINDEX_SCHEMA_RESOURCE);
+		}
+		cached = OBJECT_MAPPER.writeValueAsString(node);
+		classificationSchemaCache = cached;
+		return cached;
+	}
+
+	/**
+	 * Builds a classification prompt for a user query and obtains the provider's
+	 * response.
+	 *
+	 * @param query the natural-language request to classify
+	 * @param configurator the configuration used to resolve the prompt template and
+	 *                     GenAI provider
+	 * @return the provider-generated classification response
+	 * @throws IOException if the classification schema cannot be loaded
+	 * @throws IllegalArgumentException if the configured prompt template is invalid
+	 *                                  or no GenAI model is configured
 	 */
 	private String getClassification(String query, Configurator configurator) throws IOException {
-		URL systemResource = Bindex.class.getResource(BINDEX_SCHEMA_RESOURCE);
-		String schema = IOUtils.toString(systemResource, StandardCharsets.UTF_8);
-		ObjectMapper objectMapper = new ObjectMapper();
-		JsonNode schemaJson = objectMapper.readTree(schema);
-		JsonNode jsonNode = schemaJson.get("properties").get("classification");
-		String classificationSchema = objectMapper.writeValueAsString(jsonNode);
+		String classificationSchema = loadClassificationSchema();
 
 		String instructionTemplate = configurator.get(CLASSIFICATION_INSTRUCTION_PROP_NAME,
 				DEFAULT_CLASSIFICATION_INSTRUCTION);
-		String classificationQuery = String.format(instructionTemplate, classificationSchema, query);
+		String classificationQuery;
+		try {
+			classificationQuery = String.format(instructionTemplate, classificationSchema, query);
+		} catch (IllegalFormatException e) {
+			throw new IllegalArgumentException("Invalid classification instruction template in property `"
+					+ CLASSIFICATION_INSTRUCTION_PROP_NAME + "`: expected two %s placeholders", e);
+		}
 
 		String genai = configurator.get(Picker.MODEL_PROP_NAME, configurator.get("gw.model"));
 		if (genai == null) {
-			throw new IllegalArgumentException("genai must not be null");
+			throw new IllegalArgumentException("Neither `" + Picker.MODEL_PROP_NAME
+					+ "` nor `gw.model` is configured");
 		}
 		ProcessProvider provider = ProcessProviderManager.getProvider(genai, configurator);
 
 		provider.prompt(classificationQuery);
-		String perform = provider.perform();
-		return perform;
+		return provider.perform();
 	}
 
 	/**

@@ -88,7 +88,7 @@ class PickerTest {
         // Act / Assert
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> picker.pick("request", 1, 0.5, configurator));
-        assertEquals("genai must not be null", exception.getMessage());
+        assertEquals("Neither `pick.model` nor `gw.model` is configured", exception.getMessage());
     }
 
     @Test
