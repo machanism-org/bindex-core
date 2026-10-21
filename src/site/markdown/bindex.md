@@ -76,7 +76,7 @@ A valid `bindex.json` file follows the Bindex schema. Important properties inclu
 | `studs` | array | Gateway interfaces or abstract classes used as integration boundary contracts. |
 | `examples` | array | Practical installation, configuration, and usage scenarios. |
 
-The full schema is available in the [Bindex schema v2](https://raw.githubusercontent.com/machanism-org/machai/refs/heads/main/bindex-core/src/main/resources/schema/bindex-schema-v2.json).
+The full schema is available in the [Bindex schema v2](https://raw.githubusercontent.com/machanism-org/bindex-core/refs/heads/main/src/main/resources/schema/bindex-schema-v2.json).
 
 ## Creating a bindex.json file
 

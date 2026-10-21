@@ -141,7 +141,7 @@ If Java cannot access the JDK DNS implementation while starting the application,
 --add-exports jdk.naming.dns/com.sun.jndi.dns=java.naming
 ```
 
-Also verify that the configured MongoDB URI and credentials are reachable, that the embedding model produces vectors compatible with the repository's vector index, and that the Bindex descriptor validates against the [Bindex v2 schema](https://raw.githubusercontent.com/machanism-org/machai/refs/heads/main/bindex-core/src/main/resources/schema/bindex-schema-v2.json).
+Also verify that the configured MongoDB URI and credentials are reachable, that the embedding model produces vectors compatible with the repository's vector index, and that the Bindex descriptor validates against the [Bindex v2 schema](https://raw.githubusercontent.com/machanism-org/bindex-core/refs/heads/main/src/main/resources/schema/bindex-schema-v2.json).
 
 ## Resources
 
@@ -151,5 +151,5 @@ Also verify that the configured MongoDB URI and credentials are reachable, that 
 - [Bindex Maven Plugin](bindex-maven-plugin/)
 - [Bindex MCP Server](bindex-mcp-server/)
 - [Bindex Core on Maven Central](https://central.sonatype.com/artifact/org.machanism.machai/bindex-core)
-- [Bindex metadata schema](https://raw.githubusercontent.com/machanism-org/machai/refs/heads/main/bindex-core/src/main/resources/schema/bindex-schema-v2.json)
+- [Bindex metadata schema](https://raw.githubusercontent.com/machanism-org/bindex-core/refs/heads/main/src/main/resources/schema/bindex-schema-v2.json)
 - [Ghostwriter CLI download](https://machai.machanism.org/ghostwriter/index.html#Download)

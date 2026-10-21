@@ -56,7 +56,7 @@ than recreate their functionality from scratch:
    fit your needs.
 3. **Reviews library metadata** — For every candidate that matches the request, the act
    uses `get_bindex` to retrieve its Bindex JSON description. It also retrieves the
-   [Bindex schema](https://raw.githubusercontent.com/machanism-org/machai/refs/heads/main/bindex-core/src/main/resources/schema/bindex-schema-v2.json)
+   [Bindex schema](https://raw.githubusercontent.com/machanism-org/bindex-core/refs/heads/main/src/main/resources/schema/bindex-schema-v2.json)
    specified by the Assembly workflow and uses it to interpret that information
    consistently. The metadata can
    include features, integration points, usage examples, authorship, and licensing

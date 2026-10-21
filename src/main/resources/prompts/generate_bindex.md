@@ -48,7 +48,7 @@ If the build reports errors or warnings in the generated Javadoc:
 Produce a single JSON object that:
 
 - Strictly conforms to the Bindex Schema v2, available at:
-  `https://raw.githubusercontent.com/machanism-org/machai/refs/heads/main/bindex-core/src/main/resources/schema/bindex-schema-v2.json`
+  `https://raw.githubusercontent.com/machanism-org/bindex-core/refs/heads/main/src/main/resources/schema/bindex-schema-v2.json`
 - Populates **all required fields** using only information found in Step 2's sources.
 - Includes optional fields when relevant information is available.
 - Builds a rich `classification` property — detailed enough to be useful as
