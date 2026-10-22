@@ -87,6 +87,16 @@ embeddings so that a request can be matched by intent, not just by exact keyword
 selection, Assembly can provide a report of suggested components, integration details, and
 initial configuration for your review.
 
+## Assembly Configuration
+
+The Assembly act uses the configured generative model to plan and implement the project and
+an embedding model to support semantic library search. Its library recommendations use a
+minimum relevance score of `0.86`; a higher-scoring result is generally a closer semantic
+match, but you should still review every recommendation. The act is interactive and can
+ask for information that is necessary to continue. It works non-recursively within the
+current project context, and it uses the **Clean Architecture** template by default unless
+you request a different structure.
+
 If the request does not contain information needed to continue, Assembly asks for the
 missing details. In an interactive session, you can clarify requirements before
 continuing.

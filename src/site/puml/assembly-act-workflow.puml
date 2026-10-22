@@ -32,7 +32,7 @@ partition "assembly Episode 1: Library Discovery" {
   :Analyze each recommended library description;
   :Determine libraries matching\nthe user's request;
   while (More matching libraries?) is (yes)
-    :Retrieve the matching library's\nBindex file via get_bindex;
+    :For each matching library, retrieve its\nBindex file via get_bindex;
   endwhile (no)
   :Use matching Bindex JSON metadata and\nusage examples to guide implementation;
   note right
