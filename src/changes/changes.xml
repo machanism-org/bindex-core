@@ -27,5 +27,10 @@
       <action dev="dev" type="fix">Bindex Processing: Fixed Bindex repository type handling, Bindex configuration, schema conversion, local repository processing, package naming, and SpecialException handling.</action>
       <action dev="dev" type="refactor">Bindex Internals: Extracted the BindexRepository interface, switched repository payload handling to Map-based structures, optimized Bindex components, and used a singleton Bindex repository.</action>
     </release>
+    <release version="1.4.2" date="2026-10-23" description="Improves resource loading and picker reliability while aligning schema references across project configuration.">
+      <action dev="dev" type="fix">Improved classpath resource loading and error handling for schemas and prompt templates.</action>
+      <action dev="dev" type="fix">Improved picker schema caching, prompt validation, and missing-model error reporting.</action>
+      <action dev="dev" type="update">Aligned schema repository references in runtime configuration and project metadata.</action>
+    </release>
   </body>
 </document>
