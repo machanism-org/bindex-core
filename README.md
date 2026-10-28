@@ -1,7 +1,7 @@
 <!-- @guidance: >>> ${guidances}/readme-content.md -->
 # Bindex Core
 
-[![Maven Central](https://img.shields.io/maven-central/v/org.machanism.machai/bindex-core.svg)](https://central.sonatype.com/artifact/org.machanism.machai/bindex-core) [![bindex](https://img.shields.io/badge/bindex-blue.svg)](https://raw.githubusercontent.com/machanism-org/bindex-core/refs/heads/main/bindex.json)
+[![Maven Central](https://img.shields.io/maven-central/v/org.machanism.machai/bindex-core.svg)](https://central.sonatype.com/artifact/org.machanism.machai/bindex-core) [![Download](https://img.shields.io/sourceforge/dt/machanism/machai%2Fbindex-core%2Freleases)](https://sourceforge.net/projects/machanism/files/machai/bindex-core/releases/) [![bindex](https://img.shields.io/badge/bindex-blue.svg)](https://raw.githubusercontent.com/machanism-org/bindex-core/refs/heads/main/bindex.json)
 
 ## Cloning and Getting Started
 
