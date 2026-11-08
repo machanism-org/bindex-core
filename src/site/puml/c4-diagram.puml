@@ -14,29 +14,27 @@ LAYOUT_LEFT_RIGHT()
 
 title Bindex Core — C4 Component Diagram
 
-Person(user, "Developer / Build Process", "Uses Bindex tools to retrieve, recommend, and register library metadata")
-System_Ext(fileSystem, "Working Directory", "Provides local bindex.json descriptors for registration")
-System_Ext(genaiProvider, "GenAI Provider", "Classifies requests and creates classification embeddings")
+System_Ext(fileSystem, "Working Directory", "Provides local Bindex JSON descriptors for retrieval and registration")
+System_Ext(genaiProvider, "GenAI Provider", "Classifies requests and generates embeddings")
 System_Ext(mongodb, "MongoDB", "Persists Bindex documents and performs vector search")
 
-System_Boundary(bindexCore, "Bindex Core") {
-  Component(bindexFunctionTools, "BindexFunctionTools", "Java", "Exposes get, pick, register, schema-resource, and generation-prompt tools")
-  Component(graphqlJsonFilter, "GraphqlJsonFilter", "Java", "Projects selected top-level fields from serialized Bindex metadata")
-  Component(picker, "Picker", "Java", "Builds classification prompts, obtains embeddings, and coordinates recommendations and registration")
+Container_Boundary(bindexCore, "Bindex Core (Java library)") {
+  Component(bindexFunctionTools, "BindexFunctionTools", "Java", "Exposes metadata retrieval, library recommendation, and descriptor registration tools, plus schema and prompt resources")
+  Component(graphqlJsonFilter, "GraphqlJsonFilter", "Java", "Projects requested top-level fields from serialized Bindex metadata")
+  Component(picker, "Picker", "Java", "Classifies requests, generates embeddings, recommends libraries, saves descriptors, and resolves dependencies")
   Component(repository, "BindexRepository", "Java interface", "Defines Bindex lookup, persistence, and semantic-search operations")
-  Component(mongoRepository, "MongoBindexRepository", "Java / MongoDB Driver", "Persists Bindex documents and executes filtered vector-search queries")
+  Component(mongoRepository, "MongoBindexRepository", "Java / MongoDB Driver", "Persists descriptors and embeddings; filters vector search by language, layer, and score; selects preferred library versions")
 }
 
-Rel(user, bindexFunctionTools, "Invokes")
-Rel(bindexFunctionTools, fileSystem, "Reads descriptors from")
-Rel(bindexFunctionTools, graphqlJsonFilter, "Filters metadata with")
-Rel(bindexFunctionTools, picker, "Delegates pick and register operations to")
+Rel(bindexFunctionTools, fileSystem, "Reads project-scoped descriptors for retrieval and registration", "File I/O")
+Rel(bindexFunctionTools, graphqlJsonFilter, "Optionally filters retrieved metadata with")
+Rel(bindexFunctionTools, picker, "Delegates recommendations and registration to")
 Rel(bindexFunctionTools, repository, "Retrieves metadata through")
-Rel(bindexFunctionTools, mongoRepository, "Creates the default repository")
-Rel(picker, genaiProvider, "Requests classifications and embeddings")
-Rel(picker, repository, "Saves and searches records through")
+Rel(bindexFunctionTools, mongoRepository, "Creates the default repository implementation")
+Rel(picker, genaiProvider, "Requests classifications and embeddings from")
+Rel(picker, repository, "Saves descriptors with embeddings, searches, and retrieves metadata and dependencies")
 Rel(mongoRepository, repository, "Implements")
-Rel(mongoRepository, mongodb, "Stores documents and runs vector searches")
+Rel(mongoRepository, mongodb, "Stores documents and embeddings; performs lookup and vector search", "MongoDB Driver")
 
 SHOW_LEGEND()
 @enduml

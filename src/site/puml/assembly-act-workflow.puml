@@ -18,6 +18,8 @@ partition "assembly Episode 1: Library Discovery" {
     Constraints:
     - Implement comprehensive, correct code
     - Strictly follow the plan
+    Capabilities:
+    - Work with the local file system and command line
   end note
   :Read User Query\n(${public.prompt});
   :Plan the implementation;
@@ -32,7 +34,11 @@ partition "assembly Episode 1: Library Discovery" {
   :Analyze each recommended library description;
   :Determine libraries matching\nthe user's request;
   while (More matching libraries?) is (yes)
-    :For each matching library, retrieve its\nBindex file via get_bindex;
+    :Retrieve the next matching library's\nBindex file via get_bindex;
+    note right
+      Bindex JSON contains structured artifact
+      information and library usage examples.
+    end note
   endwhile (no)
   :Use matching Bindex JSON metadata and\nusage examples to guide implementation;
   note right
