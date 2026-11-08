@@ -74,7 +74,7 @@ Generate or update the content as follows.
 
 **Bindex Core** is the library-indexing and library-discovery component of the Machai platform. It provides a consistent way to describe software libraries as structured Bindex metadata, validate and register that metadata, and retrieve suitable libraries for a natural-language development request.
 
-The library combines schema-based metadata, generated embeddings, semantic vector search, classification filters, and a MongoDB-backed repository. Its Java API supports both application code and AI tool integrations: an AI agent can recommend libraries, inspect a complete or GraphQL-filtered descriptor, register metadata from JSON/files/URLs, and obtain the Bindex schema or generation prompt. This reduces duplicate implementation work, improves dependency selection, and makes reusable capabilities discoverable across projects.
+The library combines schema-based metadata, generated embeddings, semantic vector search, classification filters, and a MongoDB-backed repository. Its Java API supports both application code and AI tool integrations: an AI agent can recommend libraries, inspect a complete or GraphQL-filtered descriptor, register metadata from JSON/files/URLs, and obtain the Bindex schema or generation prompt. This reduces duplicate implementation work, improves dependency selection, and makes reusable capabilities discoverable across projects. Descriptor loading checks JSON parsing and mapping to the generated metadata model; it does not perform full JSON Schema validation, so schema conformance should also be checked before registration.
 
 ## Overview
 
@@ -83,7 +83,7 @@ A Bindex record captures a library's coordinates, version, purpose, classificati
 1. A library's documentation and build metadata are assembled into a schema-compliant descriptor.
 2. The descriptor's classification is converted into an embedding and stored with searchable metadata.
 3. A user request is classified by a configured GenAI provider and converted into a query embedding.
-4. Semantic search is narrowed by language and architectural layer, filtered by a score threshold, and reduced to the most useful version of each library.
+4. Exact vector search retrieves candidates, then language, architectural-layer, and score filters narrow the results. Within each search, entries are grouped by library name and the highest matching version is selected using Maven version comparison.
 5. The selected descriptors can then guide implementation, assembly, or further dependency resolution.
 
 The architecture separates AI-facing tools from the domain workflow and persistence layer. Tool operations provide the external contract; a coordination service manages classification, embeddings, registration, and recommendations; a repository abstraction isolates persistence and vector queries; a MongoDB adapter supplies the concrete storage implementation; a JSON projection utility limits returned fields; and generated schema classes preserve a typed metadata model. The documentation covers the end-to-end indexing workflow, build integration, configuration, troubleshooting, and the available automation acts. The project structure is illustrated below.
@@ -96,7 +96,7 @@ The architecture separates AI-facing tools from the domain workflow and persiste
 - Natural-language library recommendations powered by configurable GenAI and embedding providers.
 - MongoDB persistence with exact vector search, classification filters, score thresholds, and version selection.
 - Registration from a Bindex object, a project-relative JSON file, or a remote URL.
-- Retrieval by coordinates or URL, with optional GraphQL-style field filtering to reduce response size.
+- Retrieval by coordinates, a remote URL, or a project-relative local descriptor, with optional GraphQL-style top-level field filtering to reduce response size. Nested selections do not recursively filter nested objects.
 - AI function tools for discovery, metadata access, registration, schema retrieval, and Bindex-generation prompts.
 - Recursive dependency resolution and language-name normalization for reliable matching.
 - Maven integration and an assembled artifact profile for distribution.
@@ -133,7 +133,7 @@ For direct Maven use, declare the dependency in the project that consumes the li
 </dependency>
 ```
 
-The AI-facing operations are exposed as `get_bindex`, `pick_libraries`, `register_bindex`, and `register_bindex_json`. Configure the GenAI provider and embedding provider through the host application's `Configurator`; repository connections can be customized with the parameters listed below.
+The AI-facing operations are exposed as `get_bindex`, `pick_libraries`, `register_bindex`, and `register_bindex_json`. Configure the GenAI provider and embedding provider through the host application's `Configurator`; repository connections can be customized with the parameters listed below. Local descriptor paths must remain within the supplied project directory. Direct Java consumers need Java 17 or later and should call `MongoBindexRepository.close()` when finished to release the repository's connection resources.
 
 ## Built-In Acts
 
@@ -161,7 +161,7 @@ Determines whether the current project is a supported non-parent Maven project a
 
 ### `bindex/validation`
 
-Validates a generated Bindex JSON descriptor for a non-parent Maven project by loading it through the Bindex tooling. Use it after generating or editing metadata to find validation errors and correct the descriptor before registration.
+Checks a generated Bindex JSON descriptor for a non-parent Maven project by loading it through the Bindex tooling. Use it after generating or editing metadata to find parsing or model-mapping errors and correct the descriptor before registration. This act does not run a full JSON Schema validator; check schema conformance separately.
 
 ### `pick`
 
@@ -177,11 +177,11 @@ Selects libraries relevant to a user's query through Bindex recommendations. Use
 | `embedding.model` | Embedding provider model used to encode classifications for semantic search. | `CodeMie:text-embedding-005` in the `pick`, `assembly`, and Maven Bindex-generation acts; otherwise host/application-defined. |
 | `pick.score` | Similarity threshold used by the library-picking act when selecting recommendations. | `0.86` in the built-in `pick` and `assembly` acts. |
 | `picker.classificationInstruction` | Custom instruction template for producing classification JSON; it receives the classification schema and user query as format arguments. | Built-in classification instruction. |
-| `gw.path` | File glob used by an act to select the project files it processes. | `glob:.` for the Bindex generation acts. |
+| `gw.path` | File glob used by an act to select the project files it processes. | `glob:.` for Bindex generation, registration, and validation; `glob:target/reports/apidocs/**/*.html` for Javadoc extraction. |
 | `BINDEX_REPO_URL` | MongoDB connection URI for the Bindex repository. | `mongodb+srv://cluster0.hivfnpr.mongodb.net/?appName=Cluster0`. |
-| `BINDEX_USER` | MongoDB username when authentication is required. | Not set; when the default URI is used and both credentials are unset, the repository uses `user`. |
+| `BINDEX_USER` | MongoDB username when authentication is required. | Not set; for the default URI, uses `user` if the password is unset, or `machanismorg_db_user` if only `BINDEX_PASSWORD` is supplied. |
 | `BINDEX_PASSWORD` | MongoDB password used to authenticate to the repository. | Not set; when the default URI is used and both credentials are unset, the repository uses `user`. |
-| `vectorSearchLimits` / `search_limits` | Maximum number of vector-search candidates or recommendations. | `25` for the AI tool. |
+| `limits` | `pick_libraries` tool argument controlling the vector-search candidate limit per classification/layer search; filtering can reduce results and merged searches can exceed this limit. The Java API calls it `vectorSearchLimits`. | `25` for the AI tool. |
 | `score` | Minimum semantic similarity score for returned recommendations. | `0.85` for the AI tool. |
 
 ## Troubleshooting
@@ -192,13 +192,13 @@ If Java cannot access the JDK DNS implementation while starting the application,
 --add-exports jdk.naming.dns/com.sun.jndi.dns=java.naming
 ```
 
-Also verify that the configured MongoDB URI and credentials are reachable, that the embedding model produces vectors compatible with the repository's vector index, and that the Bindex descriptor validates against the [Bindex v2 schema](https://raw.githubusercontent.com/machanism-org/bindex-core/refs/heads/main/src/main/resources/schema/bindex-schema-v2.json).
+Also verify that the configured MongoDB URI and credentials are reachable, that the embedding model produces vectors compatible with the repository's vector index, and that the Bindex descriptor validates against the [Bindex v2 schema](https://raw.githubusercontent.com/machanism-org/bindex-core/refs/heads/main/src/main/resources/schema/bindex-schema-v2.json). The repository uses database `machanism`, collection `bindex`, and vector index `vector_index` on `classification_embedding`; the picker requests 700-dimensional embeddings. Registration requires credentials with write permissions. If no libraries match, broaden the request or lower the score threshold: the repository reports an error rather than returning an empty recommendation list.
 
 ## Resources
 
 - [Machai official platform site](https://machai.machanism.org/)
 - [Bindex Core documentation](https://machai.machanism.org/bindex-core/index.html)
-- [Machai GitHub repository](https://github.com/machanism-org/machai)
+- [Bindex Core GitHub repository](https://github.com/machanism-org/bindex-core)
 - [Bindex Maven Plugin](bindex-maven-plugin/)
 - [Bindex MCP Server](bindex-mcp-server/)
 - [Bindex Core on Maven Central](https://central.sonatype.com/artifact/org.machanism.machai/bindex-core)
