@@ -94,7 +94,7 @@ The MongoDB service should be listed as running.
 docker compose logs -f mongodb
 ```
 
-Use the logs to confirm startup, initialization, or diagnose connection issues.
+Use the logs to confirm startup, initialization, or diagnose connection issues. A running container may still be initializing; wait for startup to finish before connecting. All subsequent `docker compose` commands without `-f` assume your terminal is in `src/docker/mongodb`.
 
 ## Configure bindex-core to connect locally
 
@@ -109,7 +109,7 @@ export GENAI_USERNAME=...
 export gw_model=CodeMie:gpt-5.4-2026-03-05
 ```
 
-Then start bindex-core using your normal development workflow. The application should connect to MongoDB on `localhost:27017` using the configured username and password. Quoting the URL is safe in Bash-compatible shells and prevents special characters in a future connection-string option from being interpreted by the shell.
+Replace the `...` values with valid credentials for your configured GenAI service, then start bindex-core from that same shell using your normal development workflow. The application should connect to MongoDB on `localhost:27017` using the configured username and password. Quoting the URL is safe in Bash-compatible shells and prevents special characters in a future connection-string option from being interpreted by the shell.
 
 In Windows PowerShell, set the same values with:
 
@@ -170,9 +170,12 @@ Docker runs this script automatically when it initializes a new MongoDB data vol
 Run the complete script in one Compass shell session so that `db` is switched to
 `machanism` before the collection and indexes are created. The script defines the
 `id` Atlas Search index and the `vector_index` index for `classification_embedding`
-(700 dimensions with cosine similarity). If the collection or indexes already
-exist, Compass may report an existing-object error; inspect the current objects
-before deciding whether to remove them.
+(700 dimensions with cosine similarity). For an existing collection, the script
+attempts to update its validator with `collMod`. Search index creation is not
+idempotent: an existing index can cause an error and prevent later statements
+from running. Inspect the existing indexes first; if one already matches the
+script, skip its creation call and execute any remaining missing-index creation
+call separately. Wait for both indexes to become ready before testing searches.
 
 If you want to force a clean reinitialization, stop the container and remove volumes before starting it again:
 
@@ -225,12 +228,14 @@ mongodb://user:pass@localhost:27017/?authSource=admin&appName=machanism
 
 ### Database or collection is missing
 
-The initialization script runs only when a new MongoDB data volume is initialized. If existing volumes were already created before the script was added or updated, recreate the volumes:
+The initialization script runs only when a new MongoDB data volume is initialized. Check the startup logs for initialization errors, then follow the manual Compass procedure above to create missing objects without deleting data. If existing volumes were created before the script was added or updated and you intentionally want a fresh repository, recreate the volumes:
 
 ```bash
 docker compose down -v
 docker compose up -d
 ```
+
+This deletes all local MongoDB data in the Compose volumes. Back up any data you need before running it.
 
 ### Authentication fails
 
@@ -239,6 +244,8 @@ Use the default credentials from the Docker Compose configuration:
 - Username: `user`
 - Password: `pass`
 - Authentication database: `admin`
+
+If the volumes were initialized with different credentials, use those credentials; changing the Compose environment does not reset users in an existing database.
 
 For application configuration, keep:
 
