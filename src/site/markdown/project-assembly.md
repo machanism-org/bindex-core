@@ -70,7 +70,9 @@ than recreate their functionality from scratch:
    examples. The generated structure follows best practices for the chosen language and
    framework; unless you request another structure, it uses the **Clean Architecture**
    template. Integration points and example usage for selected libraries are included
-   where the request requires them.
+   where the request requires them. Whenever additional functionality is needed to
+   create or update the project, the act searches for libraries through Bindex again
+   instead of immediately writing that functionality from scratch.
 5. **Builds and corrects the project** — The act cleans and builds the generated project
    and fixes errors it encounters, with the goal of leaving a functional implementation.
 6. **Documents the result** — The generated project includes a detailed `README.md`
@@ -78,14 +80,6 @@ than recreate their functionality from scratch:
    The output includes the complete directory structure, build and configuration files,
    initial code templates, and integration guidance. You can then adapt the files to your
    own standards and requirements.
-
-The library information used in this process comes from a `bindex.json` descriptor. For
-each library, the descriptor can be produced by analyzing project artifacts such as build
-files, source code, and other metadata. It records the library's capabilities, integration
-points, examples, authorship, and license. These descriptors are indexed with semantic
-embeddings so that a request can be matched by intent, not just by exact keywords. After
-selection, Assembly can provide a report of suggested components, integration details, and
-initial configuration for your review.
 
 ## Assembly Configuration
 
@@ -100,6 +94,16 @@ you request a different structure.
 If the request does not contain information needed to continue, Assembly asks for the
 missing details. In an interactive session, you can clarify requirements before
 continuing.
+
+The current defaults in `src/main/resources/acts/assembly.toml` are:
+
+| Setting | Default | Purpose |
+| --- | --- | --- |
+| `gw.model` | `CodeMie:gpt-5.4-2026-03-05` | Generative model used to implement the request. |
+| `embedding.model` | `CodeMie:text-embedding-005` | Embedding model used for semantic search. |
+| `pick.score` | `0.86` | Minimum relevance score for recommended libraries. |
+| `gw.interactive` | `true` | Allows the act to ask for necessary information. |
+| `gw.nonRecursive` | `true` | Runs the act non-recursively in the current project context. |
 
 ## When to Use This Act
 
