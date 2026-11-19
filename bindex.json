@@ -1,9 +1,9 @@
 {
   "$schema": "https://raw.githubusercontent.com/machanism-org/bindex-core/refs/heads/main/src/main/resources/schema/bindex-schema-v2.json",
-  "id": "org.machanism.machai:bindex-core:1.4.2",
+  "id": "org.machanism.machai:bindex-core:1.4.3",
   "name": "org.machanism.machai:bindex-core",
-  "version": "1.4.2",
-  "description": "Bindex Core is a Java 17 library for creating, validating, registering, retrieving, and semantically recommending Bindex metadata for reusable software artifacts. It provides an AI-facing tool set for Model Context Protocol hosts and other automation: callers can retrieve a descriptor by Maven-style ID, HTTP URL, or project-relative file; request library recommendations from a natural-language requirement; and register descriptors from files, URLs, or in-memory JSON. Bindex descriptors capture artifact identity, Maven coordinates, classification, APIs, integration guidance, and practical examples. The library uses GenAI classification and embedding services together with a MongoDB-backed repository to support semantic discovery, library selection, governed reuse, and AI-assisted project assembly. It also exposes the Bindex v2 JSON Schema and a generation prompt so clients can produce valid metadata before publishing it.",
+  "version": "1.4.3",
+  "description": "Bindex Core is a Java library-indexing and library-discovery component for the Machai platform. It represents reusable libraries and integrations as structured Bindex v2 metadata, offers descriptor retrieval and registration, and recommends components for natural-language requirements using GenAI classification, embeddings, and MongoDB vector search. Its Java API combines the BindexRepository persistence boundary, MongoBindexRepository storage adapter, Picker coordination and recommendation service, and AI-facing Functional Tools for lookup, recommendation, registration, schema access, and descriptor-generation prompts. Descriptors contain artifact identity, purpose, dependencies, technical classification, API guidance, practical examples, integration and configuration instructions, and license metadata. Use it to create a searchable software-component catalog, integrate Bindex functions into applications or MCP hosts, and support AI-assisted dependency selection and project assembly. Java 17 or later is required. Descriptor JSON parsing and model mapping do not replace independent validation against the Bindex v2 JSON Schema.",
   "authors": [
     {
       "name": "Viktor Tovstyi",
@@ -13,14 +13,14 @@
   ],
   "license": "Apache License, Version 2.0",
   "classification": {
-    "type": "library",
+    "type": "Java library",
     "domains": [
-      "Software Library Discovery",
-      "Metadata Management",
-      "Semantic Search",
-      "Generative AI Tool Integration",
-      "Model Context Protocol",
-      "Project Assembly"
+      "Software component cataloging and library indexing",
+      "Natural-language software library discovery and recommendation",
+      "Semantic search and vector retrieval",
+      "Bindex metadata generation, validation, and registration",
+      "Generative AI and MCP tool integration",
+      "Maven-based project assembly and dependency selection"
     ],
     "languages": [
       {
@@ -34,17 +34,18 @@
       "Infrastructure"
     ],
     "usageContext": [
-      "MCP server tool publication",
-      "AI agent library discovery",
-      "Maven build automation",
-      "Java application integration",
-      "Metadata catalog registration"
+      "Java applications that manage a searchable catalog of reusable libraries",
+      "MCP-compatible AI host integrations exposing Bindex tools",
+      "Natural-language dependency and component discovery workflows",
+      "Metadata registration from project-local JSON files, remote URLs, or in-memory objects",
+      "Maven builds and AI-assisted software assembly",
+      "Local development and testing against MongoDB Atlas Local"
     ],
     "targetEnvironment": [
-      "Java"
+      "Java 17 or later"
     ],
     "integrations": [
-      "MongoDB",
+      "MongoDB Atlas Search and Vector Search",
       "Model Context Protocol"
     ]
   },
@@ -54,128 +55,183 @@
     "coordinates": {
       "group": "org.machanism.machai",
       "artifactId": "bindex-core",
-      "version": "1.4.2",
+      "version": "1.4.3",
       "extension": "jar"
     }
   },
   "constructors": [
     {
+      "package": "org.machanism.machai.bindex.core",
+      "signature": "public org.machanism.machai.bindex.core.Picker(org.machanism.machai.bindex.core.BindexRepository, org.machanism.macha.core.commons.configurator.Configurator)",
+      "description": "Creates the service coordinating Bindex metadata registration, semantic search, natural-language request classification, embedding generation, and recommendation through a supplied repository and runtime configuration.",
+      "examples": [
+        {
+          "snippet": "org.machanism.machai.bindex.core.BindexRepository repository = new org.machanism.machai.bindex.core.MongoBindexRepository(configurator);\norg.machanism.machai.bindex.core.Picker picker = new org.machanism.machai.bindex.core.Picker(configurator, repository);",
+          "description": "Configure GenAI, embedding, and MongoDB settings with the host Configurator, create the repository adapter, and pass both dependencies to the Picker for subsequent library searches. Close the MongoDB repository when finished."
+        }
+      ]
+    },
+    {
+      "package": "org.machanism.machai.bindex.core",
+      "signature": "public org.machanism.machai.bindex.core.MongoBindexRepository(org.machanism.macha.core.commons.configurator.Configurator)",
+      "description": "Creates a MongoDB-backed implementation of the BindexRepository persistence contract using the provided application configuration. It stores Bindex descriptors and embeddings and supports retrieval and vector-based candidate searches.",
+      "examples": [
+        {
+          "snippet": "org.machanism.machai.bindex.core.MongoBindexRepository repository = new org.machanism.machai.bindex.core.MongoBindexRepository(configurator);",
+          "description": "Instantiate the MongoDB adapter after configuring the repository connection and credentials; call close after use to release MongoDB client resources."
+        }
+      ]
+    },
+    {
       "package": "org.machanism.machai.bindex.ai.tools",
       "signature": "public org.machanism.machai.bindex.ai.tools.BindexFunctionTools()",
-      "description": "Creates the AI function-tool provider that exposes Bindex descriptor retrieval, semantic library recommendation, and descriptor registration operations. The host supplies its project directory and configurator when invoking individual operations.",
+      "description": "Creates the AI function-tool provider exposing Bindex descriptor lookup, library recommendations, descriptor registration, schema resources, and generation prompts to a compatible host.",
       "examples": [
         {
           "snippet": "org.machanism.machai.bindex.ai.tools.BindexFunctionTools tools = new org.machanism.machai.bindex.ai.tools.BindexFunctionTools();",
-          "description": "Create the provider before a compatible AI or MCP host discovers its annotated tools, prompts, and schema resource."
+          "description": "Register or expose this provider with a compatible Function Tools host so the host can discover its annotated operations, resource, and prompt template."
         }
       ]
     }
   ],
   "features": [
     {
-      "name": "getBindex",
-      "package": "org.machanism.machai.bindex.ai.tools",
-      "signature": "public org.machanism.machai.schema.Bindex getBindex(java.lang.String id, java.lang.String query, java.io.File projectDir, org.machanism.macha.core.commons.configurator.Configurator configurator) throws java.io.IOException",
-      "description": "Retrieves Bindex metadata from a registered Bindex ID, an HTTP(S) descriptor URL, or a file URL resolved relative to the active project directory. A GraphQL-style selection query can return only requested fields and reduce an AI tool response payload.",
+      "name": "find",
+      "package": "org.machanism.machai.bindex.core",
+      "signature": "java.util.Collection<org.machanism.machai.bindex.core.BindexInfo> find(org.machanism.machai.schema.Classification[] classifications, java.util.List<java.lang.Double> embedding, long vectorSearchLimits, double score, org.machanism.macha.core.commons.configurator.Configurator config)",
+      "description": "BindexRepository search contract for retrieving candidate descriptors through semantic vector similarity and optional classification filters. Applies a similarity threshold and candidate limit and returns compact BindexInfo results, typically ordered by score.",
       "examples": [
         {
-          "snippet": "org.machanism.machai.schema.Bindex descriptor = tools.getBindex(\"org.machanism.machai:bindex-core:1.4.2\", \"{ name version classification { languages } }\", new java.io.File(\".\"), configurator);",
-          "description": "Retrieve the identity and classification needed by an agent without transferring the entire registered descriptor."
+          "snippet": "java.util.Collection<org.machanism.machai.bindex.core.BindexInfo> matches = repository.find(classifications, queryEmbedding, 25L, 0.85d, configurator);",
+          "description": "Search for relevant registered components using an embedding generated for the user's requirement; pass classification constraints when the search should be limited by technical category."
         }
       ]
     },
     {
       "name": "getRecommendedLibraries",
-      "package": "org.machanism.machai.bindex.ai.tools",
-      "signature": "public java.util.Collection<org.machanism.machai.bindex.BindexInfo> getRecommendedLibraries(java.lang.String prompt, double score, int vectorSearchLimits, org.machanism.macha.core.commons.configurator.Configurator configurator) throws java.io.IOException",
-      "description": "Uses semantic vector search to recommend registered libraries for a natural-language development requirement. The score controls the minimum relevance and the limit controls the candidate count.",
+      "package": "org.machanism.machai.bindex.core",
+      "signature": "java.util.Collection<org.machanism.machai.bindex.core.BindexInfo> pick(java.lang.String prompt, long vectorSearchLimits, double score, org.machanism.macha.core.commons.configurator.Configurator configurator) throws java.io.IOException",
+      "description": "Classifies a natural-language development request, obtains its embedding, searches the configured repository, and returns relevant library summaries according to the requested candidate limit and minimum semantic score.",
       "examples": [
         {
-          "snippet": "java.util.Collection<org.machanism.machai.bindex.BindexInfo> matches = tools.getRecommendedLibraries(\"Find Java libraries for AI-assisted software component discovery\", 0.85d, 25, configurator);",
-          "description": "Ask for dependency candidates during project planning, then inspect selected records before adding dependencies."
+          "snippet": "java.util.Collection<org.machanism.machai.bindex.core.BindexInfo> matches = picker.pick(\"Find Java components for semantic software library discovery\", 25L, 0.85d, configurator);",
+          "description": "Use the Picker during application planning to obtain candidate artifacts matching a real implementation need, then inspect full metadata before selecting dependencies."
+        }
+      ]
+    },
+    {
+      "name": "getBindex",
+      "package": "org.machanism.machai.bindex.ai.tools",
+      "signature": "org.machanism.machai.schema.Bindex getBindex(java.lang.String id, java.lang.String graphqlQuery, java.io.File projectDir, org.machanism.macha.core.commons.configurator.Configurator configurator)",
+      "description": "Loads a Bindex descriptor by registered identifier, HTTP(S) URL, or project-contained local file and optionally projects requested top-level fields using a GraphQL-style selection. Nested objects are returned whole rather than recursively projected.",
+      "examples": [
+        {
+          "snippet": "org.machanism.machai.schema.Bindex descriptor = tools.getBindex(\"org.machanism.machai:bindex-core:1.4.3\", \"{ name version classification { languages } }\", new java.io.File(\".\"), configurator);",
+          "description": "Retrieve a registered descriptor while requesting only identity and classification fields needed by an agent."
         }
       ]
     },
     {
       "name": "registerBindex",
       "package": "org.machanism.machai.bindex.ai.tools",
-      "signature": "public java.lang.String registerBindex(java.lang.String path, java.io.File projectDir, org.machanism.macha.core.commons.configurator.Configurator configurator) throws java.io.IOException",
-      "description": "Loads a Bindex JSON descriptor from a project-local path or HTTP(S) URL and registers or updates it in the configured Bindex repository.",
+      "signature": "java.lang.String registerBindex(java.lang.String file, java.io.File projectDir, org.machanism.macha.core.commons.configurator.Configurator configurator)",
+      "description": "Reads a Bindex descriptor from a project-contained file or HTTP(S) URL and registers it with the configured repository, returning the saved identifier. File-based paths must remain within the supplied project directory.",
       "examples": [
         {
-          "snippet": "java.lang.String registeredId = tools.registerBindex(\"bindex.json\", new java.io.File(\".\"), configurator);",
-          "description": "Publish the reviewed descriptor in the current Maven project so it can be discovered by semantic library search."
+          "snippet": "java.lang.String id = tools.registerBindex(\"bindex.json\", new java.io.File(\".\"), configurator);",
+          "description": "Register a reviewed descriptor from the root of the current project for subsequent recommendation and discovery."
         }
       ]
     },
     {
       "name": "registerBindexJson",
       "package": "org.machanism.machai.bindex.ai.tools",
-      "signature": "public java.lang.String registerBindexJson(org.machanism.machai.schema.Bindex bindex, org.machanism.macha.core.commons.configurator.Configurator configurator)",
-      "description": "Registers a Bindex descriptor already held in memory and returns its repository identifier, avoiding an intermediate file or remote download.",
+      "signature": "java.lang.String registerBindexJson(org.machanism.machai.schema.Bindex bindex, org.machanism.macha.core.commons.configurator.Configurator configurator)",
+      "description": "Registers a Bindex schema-model object already in memory and returns its assigned identifier, avoiding an intermediate local file or remote download.",
       "examples": [
         {
-          "snippet": "java.lang.String registeredId = tools.registerBindexJson(descriptor, configurator);",
-          "description": "Use this operation after an agent has generated and validated an org.machanism.machai.schema.Bindex object in memory."
+          "snippet": "java.lang.String id = tools.registerBindexJson(descriptor, configurator);",
+          "description": "Submit an already prepared org.machanism.machai.schema.Bindex object directly from an AI integration or Java workflow."
         }
       ]
     }
   ],
   "customizations": [
     {
-      "name": "BINDEX_REPO_URL",
-      "description": "Configures the MongoDB connection URI used by the Bindex repository. Point it at a local MongoDB Atlas Local instance or a managed MongoDB deployment appropriate for the environment.",
-      "type": "configuration property",
+      "name": "BindexRepository",
+      "package": "org.machanism.machai.bindex.core",
+      "description": "Persistence and semantic-search boundary for storing Bindex descriptors, retrieving entries by identifier, and finding candidates based on embedding vectors and classification constraints. Applications can provide another implementation when a storage backend other than MongoDB is required.",
+      "type": "interface",
       "examples": [
         {
-          "snippet": "set BINDEX_REPO_URL=mongodb://localhost:27017/?appName=machanism",
-          "description": "On Windows Command Prompt, set the local repository URI before launching the application or MCP server."
+          "snippet": "public final class InMemoryBindexRepository implements org.machanism.machai.bindex.core.BindexRepository {\n  public java.util.Collection<org.machanism.machai.bindex.core.BindexInfo> find(org.machanism.machai.schema.Classification[] classifications, java.util.List<java.lang.Double> embedding, long vectorSearchLimits, double score, org.machanism.macha.core.commons.configurator.Configurator config) { return java.util.List.of(); }\n  public org.machanism.machai.schema.Bindex getBindex(java.lang.String id) { return null; }\n  public java.lang.String save(org.machanism.machai.schema.Bindex bindex, java.util.List<java.lang.Double> embedding) { return bindex.getId(); }\n}",
+          "description": "Implement the public repository contract to substitute test, in-memory, or application-specific persistence; replace the illustrative method bodies with actual storage and retrieval behavior."
         }
       ]
     },
     {
-      "name": "BINDEX_USER and BINDEX_PASSWORD",
-      "description": "Supply repository authentication credentials when the configured MongoDB instance requires authentication.",
-      "type": "configuration property",
+      "name": "BINDEX_REPO_URL, BINDEX_USER, and BINDEX_PASSWORD",
+      "description": "Environment configuration for the MongoDB repository URI and optional authentication credentials. A local MongoDB Atlas Local setup can use mongodb://localhost:27017/?appName=machanism with user and pass credentials.",
+      "type": "environment configuration",
       "examples": [
         {
-          "snippet": "set BINDEX_USER=user && set BINDEX_PASSWORD=pass",
-          "description": "On Windows Command Prompt, configure the credentials used to connect to a local development repository."
+          "snippet": "$env:BINDEX_REPO_URL = \"mongodb://localhost:27017/?appName=machanism\"\n$env:BINDEX_USER = \"user\"\n$env:BINDEX_PASSWORD = \"pass\"",
+          "description": "PowerShell example configuring application connection settings for a local development repository before launching the Java process."
         }
       ]
     }
   ],
-  "studs": [],
+  "studs": [
+    {
+      "name": "org.machanism.machai.bindex.core.BindexRepository",
+      "package": "org.machanism.machai.bindex.core",
+      "type": "interface",
+      "description": "Storage gateway contract defining Bindex descriptor retrieval and saving, as well as embedding-based recommendations with classification and score filtering. Implement this interface to connect Picker workflows to a persistence implementation.",
+      "implement": "org.machanism.machai.bindex.core.MongoBindexRepository"
+    }
+  ],
   "examples": [
     {
-      "title": "Use Bindex Core from a Maven application",
+      "title": "Install and use Bindex Core in a Maven Java application",
       "steps": [
-        "Add the Maven dependency for org.machanism.machai:bindex-core:1.4.2 to the consuming project's dependencies.",
-        "Configure a reachable MongoDB Bindex repository and the GenAI and embedding providers through the host Configurator.",
-        "Create org.machanism.machai.bindex.ai.tools.BindexFunctionTools and call getRecommendedLibraries with a concrete requirement.",
-        "Use getBindex to inspect a recommendation and registerBindex to publish the consuming project's reviewed descriptor."
+        "Add org.machanism.machai:bindex-core:1.4.3 as a dependency in the consuming project's pom.xml.",
+        "Configure the host Configurator with GenAI and embedding provider credentials and model settings, plus the MongoDB repository URI and credentials.",
+        "Create org.machanism.machai.bindex.core.MongoBindexRepository and org.machanism.machai.bindex.core.Picker using the configured runtime settings.",
+        "Call Picker.pick with a specific natural-language requirement, candidate limit, minimum score, and Configurator; inspect returned BindexInfo records and retrieve complete descriptors as needed.",
+        "Close MongoBindexRepository when the application is done so its MongoDB client resources are released."
       ],
-      "dependency": "<dependency>\n  <groupId>org.machanism.machai</groupId>\n  <artifactId>bindex-core</artifactId>\n  <version>1.4.2</version>\n</dependency>",
-      "scenario": "A Java build-planning service searches its approved component catalog for libraries that match an implementation request and records its own reusable metadata afterward."
+      "dependency": "<dependency>\n  <groupId>org.machanism.machai</groupId>\n  <artifactId>bindex-core</artifactId>\n  <version>1.4.3</version>\n</dependency>",
+      "configuration": "Set BINDEX_REPO_URL, BINDEX_USER, and BINDEX_PASSWORD for MongoDB; configure the host's GenAI and embedding services through org.machanism.macha.core.commons.configurator.Configurator.",
+      "scenario": "A Java application planning a new feature queries its organization's Bindex catalog for relevant reusable components before choosing dependencies."
     },
     {
-      "title": "Publish Bindex tools through a Machai MCP server",
+      "title": "Run Bindex tools via the Machai MCP server on Windows",
       "steps": [
-        "Download machai-mcp-server.jar and bindex-core.jar, or add Bindex Core as a dependency of the MCP Server Maven Plugin.",
-        "Configure GENAI_USERNAME, GENAI_PASSWORD, BINDEX_REPO_URL, BINDEX_USER, and BINDEX_PASSWORD for the deployment environment.",
-        "Start org.machanism.machai.mcp.server.McpServer with both JAR files on the classpath and an available port such as 45000.",
-        "Connect an MCP client such as Claude Desktop, Cursor, VS Code, JetBrains IDEs, Zed, or Warp and invoke get_bindex, pick_libraries, or register_bindex."
+        "Install a Java 17 or later runtime and download machai-mcp-server.jar and bindex-core.jar into a working directory.",
+        "Configure GENAI_USERNAME, GENAI_PASSWORD, embedding.model, gw.model, BINDEX_REPO_URL, BINDEX_USER, and BINDEX_PASSWORD for the target environment; keep secrets outside committed configuration.",
+        "Start the MCP server from PowerShell with the downloaded artifacts on a semicolon-separated classpath and choose an available TCP port.",
+        "Connect an MCP-compatible client and invoke get_bindex to inspect metadata, pick_libraries to discover relevant artifacts, or register_bindex to publish a reviewed descriptor."
       ],
-      "command": "java -cp machai-mcp-server.jar;bindex-core.jar org.machanism.machai.mcp.server.McpServer -p 45000",
-      "scenario": "A team centrally publishes governed metadata lookup, semantic library selection, and registration tools to several MCP-compatible developer assistants on Windows."
+      "command": "java -DGENAI_PASSWORD= -DGENAI_USERNAME= -cp \"machai-mcp-server.jar;bindex-core.jar\" -Dembedding.model=CodeMie:text-embedding-005 -Dgw.model=CodeMie:gpt-5.4-2026-03-05 org.machanism.machai.mcp.server.McpServer -p 45000",
+      "configuration": "Supply model and database settings as JVM properties or environment variables supported by the Machai host, and configure MCP clients to connect to the selected server transport and port.",
+      "scenario": "A development team offers a single controlled MCP endpoint that lets multiple IDE assistants search and inspect the shared component catalog."
+    },
+    {
+      "title": "Run a local MongoDB Bindex repository for development",
+      "steps": [
+        "Install Docker Desktop with Docker Compose support and ensure the Docker engine is running.",
+        "From the project root, start the Atlas Local service with docker compose -f src/docker/mongodb/docker-compose.yml up -d.",
+        "Configure the Java process with BINDEX_REPO_URL=mongodb://localhost:27017/?appName=machanism, BINDEX_USER=user, and BINDEX_PASSWORD=pass, together with valid GenAI provider settings.",
+        "Run the Java application or MCP host using Bindex Core; inspect service health with docker compose -f src/docker/mongodb/docker-compose.yml ps and stop the service with docker compose -f src/docker/mongodb/docker-compose.yml down."
+      ],
+      "scenario": "A developer validates descriptor registration and semantic searches locally against the documented Atlas Local database without using a remote MongoDB deployment."
     }
   ],
   "dependencies": [
-    "org.machanism.machai:genai-client:1.4.2",
+    "org.machanism.machai:genai-client:1.4.3",
     "org.tomlj:tomlj:2.1.1",
     "com.graphql-java:graphql-java:22.3",
-    "org.apache.maven:maven-core:3.8.1",
-    "org.mongodb:mongodb-driver-sync:5.6.4",
-    "org.slf4j:slf4j-api:2.0.17"
+    "org.apache.maven:maven-core:3.9.6",
+    "org.mongodb:mongodb-driver-sync:5.6.4"
   ]
 }
