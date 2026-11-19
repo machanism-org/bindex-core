@@ -79,6 +79,7 @@ partition "assembly Episode 3: Documentation & Finalization" {
     gw.nonRecursive = true
     gw.model = CodeMie:gpt-5.4-2026-03-05
     embedding.model = CodeMie:text-embedding-005
+    pick.score = 0.86
   end note
 }
 

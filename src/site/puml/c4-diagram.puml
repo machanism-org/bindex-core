@@ -15,23 +15,23 @@ LAYOUT_LEFT_RIGHT()
 title Bindex Core — C4 Component Diagram
 
 System_Ext(fileSystem, "Working Directory", "Provides local Bindex JSON descriptors for retrieval and registration")
-System_Ext(genaiProvider, "GenAI Provider", "Classifies requests and generates embeddings")
+System_Ext(genaiProvider, "GenAI and Embedding Providers", "Classifies recommendation requests and generates semantic embeddings")
 System_Ext(mongodb, "MongoDB", "Persists Bindex documents and performs vector search")
 
 Container_Boundary(bindexCore, "Bindex Core (Java library)") {
   Component(bindexFunctionTools, "BindexFunctionTools", "Java", "Exposes metadata retrieval, library recommendation, and descriptor registration tools, plus schema and prompt resources")
   Component(graphqlJsonFilter, "GraphqlJsonFilter", "Java", "Projects requested top-level fields from serialized Bindex metadata")
-  Component(picker, "Picker", "Java", "Classifies requests, generates embeddings, recommends libraries, saves descriptors, and resolves dependencies")
+  Component(picker, "Picker", "Java", "Classifies recommendation requests, generates embeddings, searches for matching libraries, and saves registered descriptors")
   Component(repository, "BindexRepository", "Java interface", "Defines Bindex lookup, persistence, and semantic-search operations")
   Component(mongoRepository, "MongoBindexRepository", "Java / MongoDB Driver", "Persists descriptors and embeddings; filters vector search by language, layer, and score; selects preferred library versions")
 }
 
 Rel(bindexFunctionTools, fileSystem, "Reads project-scoped descriptors for retrieval and registration", "File I/O")
-Rel(bindexFunctionTools, graphqlJsonFilter, "Optionally filters retrieved metadata with")
+Rel(bindexFunctionTools, graphqlJsonFilter, "Applies an optional top-level field projection with")
 Rel(bindexFunctionTools, picker, "Delegates recommendations and registration to")
 Rel(bindexFunctionTools, repository, "Retrieves metadata through")
 Rel(bindexFunctionTools, mongoRepository, "Creates the default repository implementation")
-Rel(picker, genaiProvider, "Requests classifications and embeddings from")
+Rel(picker, genaiProvider, "Requests prompt classifications and semantic embeddings from")
 Rel(picker, repository, "Saves descriptors with embeddings, searches, and retrieves metadata and dependencies")
 Rel(mongoRepository, repository, "Implements")
 Rel(mongoRepository, mongodb, "Stores documents and embeddings; performs lookup and vector search", "MongoDB Driver")
