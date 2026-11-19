@@ -8,17 +8,21 @@
 	<parent>
 		<groupId>org.machanism.machai</groupId>
 		<artifactId>machai</artifactId>
-		<version>1.4.3</version>
+		<version>1.4.4-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>bindex-core</artifactId>
 	<name>Bindex Core</name>
+	
+	<!-- @guidance: Summarize the `src/site/markdown/index.md` introduction
+	section and put this conten to the `description` tag.  -->
 	<description>
-		bindex-core provides core functions for managing bindex metadata,
-		including library generation, registration, selection, and project
-		building.
-		It enables automated processing of library metadata to support
-		efficient application discovery, integration, and assembly workflows.
+		Bindex Core is the Machai platform's library-indexing and discovery
+		component. It provides structured Bindex metadata management, validation,
+		registration, and natural-language library recommendations using semantic
+		search. By making reusable libraries easier to discover and integrate, it
+		helps reduce duplicated implementation work and supports efficient
+		application assembly workflows.
 	</description>
 
 	<profiles>
@@ -61,7 +65,7 @@
 		<dependency>
 			<groupId>org.machanism.machai</groupId>
 			<artifactId>genai-client</artifactId>
-			<version>1.4.3</version>
+			<version>1.4.4-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.tomlj</groupId>
